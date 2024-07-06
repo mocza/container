@@ -1,0 +1,56 @@
+services:
+  mysql:
+    image: mysql:8.4
+    container_name: semaphore-mysql
+    restart: unless-stopped
+    hostname: mysql
+    volumes:
+      - semaphore-mysql:/var/lib/mysql
+    secrets:
+      - MYSQL_PASSWORD
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+      MYSQL_DATABASE: semaphore
+      MYSQL_USER: semaphore
+      MYSQL_PASSWORD_FILE: "/run/secrets/MYSQL_PASSWORD"
+#      MYSQL_PASSWORD: dontusethis  # use MYSQL_PASSWORD_FILE instead
+  semaphore:
+    image: semaphoreui/semaphore:v2.10.11
+    container_name: semaphore-ui
+    restart: unless-stopped
+    secrets:
+      - SEMAPHORE_ADMIN_PASSWORD
+      - MYSQL_PASSWORD
+      - SEMAPHORE_ACCESS_KEY_ENCRYPTION
+    ports:
+      - 3000:3000
+    environment:
+      SEMAPHORE_DB_USER: semaphore
+      SEMAPHORE_DB_PASS_FILE: "/run/secrets/MYSQL_PASSWORD"
+#      SEMAPHORE_DB_PASS: dontusethis   # use SEMAPHORE_DB_PASS_FILE instead
+      SEMAPHORE_DB_HOST: mysql
+      SEMAPHORE_DB_PORT: 3306
+      SEMAPHORE_DB_DIALECT: mysql
+      SEMAPHORE_DB: semaphore
+      SEMAPHORE_PLAYBOOK_PATH: /tmp/semaphore/
+      SEMAPHORE_ADMIN_PASSWORD_FILE: "/run/secrets/SEMAPHORE_ADMIN_PASSWORD"
+#      SEMAPHORE_ADMIN_PASSWORD: dontusethis    # use SEMAPHORE_ADMIN_PASSWORD_FILE instead
+      SEMAPHORE_ADMIN_NAME: admin
+      SEMAPHORE_ADMIN_EMAIL: admin@localhost
+      SEMAPHORE_ADMIN: admin
+      SEMAPHORE_ACCESS_KEY_ENCRYPTION_FILE: "/run/secrets/SEMAPHORE_ACCESS_KEY_ENCRYPTION"
+#      SEMAPHORE_ACCESS_KEY_ENCRYPTION: dontusethis # use SEMAPHORE_ACCESS_KEY_ENCRYPTION_FILE instead
+      TZ: UTC
+    depends_on:
+      - mysql
+volumes:
+  semaphore-mysql:
+    name: semaphore-mysql
+
+secrets:
+  MYSQL_PASSWORD:
+    file: ${CWD}/secrets/semaphore-mysql-password
+  SEMAPHORE_ADMIN_PASSWORD:
+    file: ${CWD}/secrets/semaphore-admin-password
+  SEMAPHORE_ACCESS_KEY_ENCRYPTION:
+    file: ${CWD}/secrets/semaphore-access-key-encryption

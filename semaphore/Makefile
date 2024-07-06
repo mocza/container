@@ -1,0 +1,28 @@
+SHELL := /bin/bash
+.PHONY: clean-secrets mkdir-secrets get-secrets secrets env
+
+all: env secrets 
+
+secrets: clean-secrets mkdir-secrets get-secrets
+
+clean-secrets:
+#	@[[ -d secrets ]] && rm -rf secrets || true
+	@if [ -d secrets ]; then \
+		rm -rf secrets; \
+	fi
+
+mkdir-secrets:
+	@mkdir -p secrets
+
+get-secrets:
+	@cd secrets; \
+	bws secret list | jq -c '.[]' | \
+	while read -r json; do \
+		key=$$(echo $$json | jq -r '.key'); \
+		value=$$(echo $$json | jq -r '.value'); \
+		echo "$$value" > "$$key"; \
+	done
+
+# Portainer deploying from docker compose doesn't seem to find files in the current work directory
+env:
+	@echo "CWD=$(PWD)" > .env
