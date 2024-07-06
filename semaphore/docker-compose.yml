@@ -49,8 +49,8 @@ volumes:
 
 secrets:
   MYSQL_PASSWORD:
-    file: ${CWD}/secrets/semaphore-mysql-password
+    file: ./secrets/semaphore-mysql-password
   SEMAPHORE_ADMIN_PASSWORD:
-    file: ${CWD}/secrets/semaphore-admin-password
+    file: ./secrets/semaphore-admin-password
   SEMAPHORE_ACCESS_KEY_ENCRYPTION:
-    file: ${CWD}/secrets/semaphore-access-key-encryption
+    file: ./secrets/semaphore-access-key-encryption

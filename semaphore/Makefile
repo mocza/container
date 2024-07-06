@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 .PHONY: clean-secrets mkdir-secrets get-secrets secrets env
 
-all: env secrets 
+all: secrets 
 
 secrets: clean-secrets mkdir-secrets get-secrets
 
