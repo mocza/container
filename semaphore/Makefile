@@ -16,7 +16,7 @@ mkdir-secrets:
 
 get-secrets:
 	@cd secrets; \
-	bws secret list | jq -c '.[]' | \
+	docker run --rm -it -e "BWS_ACCESS_TOKEN" bitwarden/bws secret list --color no | jq -c '.[]' | \
 	while read -r json; do \
 		key=$$(echo $$json | jq -r '.key'); \
 		value=$$(echo $$json | jq -r '.value'); \
